@@ -9,14 +9,16 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 
@@ -48,22 +50,20 @@ public class RegisterActivity extends AsyncTask<String, Void, String> {
 
                 link = "http://www.jjezusek.byethost7.com/acc_track.php" + data;
 
+
                 URL url = new URL(link);
+                HttpClient client = new DefaultHttpClient();
+                HttpGet request = new HttpGet();
+                request.setURI(new URI(link));
 
-                Log.d("url", url.toString());
-
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setDoOutput(true);
-                urlConnection.connect();
+                HttpResponse response = client.execute(request);
+                BufferedReader in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                
 
 
-                bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                result = bufferedReader.readLine();
+                result = in.readLine();
 
+                Log.d("error", result);
 
                 return result;
             } catch (Exception e) {
